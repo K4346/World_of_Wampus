@@ -33,18 +33,21 @@ class Memory {
     enum class wumpusState(val risk: Int) {
         True(1000),
         Possible(100),
+        Mark(0),
         Unknown(10),
         False(0),
     }
     enum class holeState(val risk: Int) {
         True(100),
         Possible(10),
+        Mark(0),
         Unknown(5),
         False(0),
     }
     enum class goldState(val risk: Int) {
         True(-60),
         Possible(-2),
+        Mark(0),
         Unknown(-1),
         False(0),
     }

@@ -10,8 +10,12 @@ class Player {
 
     fun makeTurn(map: ArrayList<Room>, context: Context) {
         val index = findBestWay()
-        goTo(map, index, context)
-        markRooms()
+        if (index==-1){
+            gameOver(context, GameEnd.NoTurns)
+        } else {
+            goTo(map, index, context)
+            markRooms()
+        }
     }
 
     private fun goTo(map: ArrayList<Room>, newPlayerIndex: Int, context: Context) {
@@ -41,39 +45,43 @@ class Player {
         if (right != -1) memory.rooms[right].isLocked = false
 
         if (currentRoom.smell) {
-            if (up != -1 && memory.rooms[up].wumpus==Memory.wumpusState.Unknown) memory.rooms[up].wumpus = Memory.wumpusState.Possible
-            if (down != -1 && memory.rooms[down].wumpus==Memory.wumpusState.Unknown) memory.rooms[down].wumpus = Memory.wumpusState.Possible
-            if (left != -1 && memory.rooms[left].wumpus==Memory.wumpusState.Unknown) memory.rooms[left].wumpus = Memory.wumpusState.Possible
-            if (right != -1 && memory.rooms[right].wumpus==Memory.wumpusState.Unknown) memory.rooms[right].wumpus = Memory.wumpusState.Possible
+            memory.rooms[newPlayerIndex].wumpus= Memory.wumpusState.Mark
+            if (up != -1 && !memory.rooms[up].beenHere  && memory.rooms[up].wumpus==Memory.wumpusState.Unknown) memory.rooms[up].wumpus = Memory.wumpusState.Possible
+            if (down != -1 && !memory.rooms[down].beenHere  && memory.rooms[down].wumpus==Memory.wumpusState.Unknown) memory.rooms[down].wumpus = Memory.wumpusState.Possible
+            if (left != -1 && !memory.rooms[left].beenHere  && memory.rooms[left].wumpus==Memory.wumpusState.Unknown) memory.rooms[left].wumpus = Memory.wumpusState.Possible
+            if (right != -1 && !memory.rooms[right].beenHere  && memory.rooms[right].wumpus==Memory.wumpusState.Unknown) memory.rooms[right].wumpus = Memory.wumpusState.Possible
         } else {
-            if (up != -1 && memory.rooms[up].wumpus!=Memory.wumpusState.True) memory.rooms[up].wumpus = Memory.wumpusState.False
-            if (down != -1 && memory.rooms[down].wumpus!=Memory.wumpusState.True) memory.rooms[down].wumpus = Memory.wumpusState.False
-            if (left != -1 && memory.rooms[left].wumpus!=Memory.wumpusState.True) memory.rooms[left].wumpus = Memory.wumpusState.False
-            if (right != -1 && memory.rooms[right].wumpus!=Memory.wumpusState.True) memory.rooms[right].wumpus = Memory.wumpusState.False
+            if (up != -1 && !memory.rooms[up].beenHere && memory.rooms[up].wumpus!=Memory.wumpusState.True) memory.rooms[up].wumpus = Memory.wumpusState.False
+            if (down != -1 && !memory.rooms[down].beenHere && memory.rooms[down].wumpus!=Memory.wumpusState.True) memory.rooms[down].wumpus = Memory.wumpusState.False
+            if (left != -1 && !memory.rooms[left].beenHere && memory.rooms[left].wumpus!=Memory.wumpusState.True) memory.rooms[left].wumpus = Memory.wumpusState.False
+            if (right != -1 && !memory.rooms[right].beenHere &&  memory.rooms[right].wumpus!=Memory.wumpusState.True) memory.rooms[right].wumpus = Memory.wumpusState.False
         }
 
+//        todo hole могут повторяться поэтому сейчас возможно что гг отмететит клетку в которой есть wind но нет hole
         if (currentRoom.wind) {
-            if (up != -1 && memory.rooms[up].hole==Memory.holeState.Unknown) memory.rooms[up].hole = Memory.holeState.Possible
-            if (down != -1 && memory.rooms[down].hole==Memory.holeState.Unknown) memory.rooms[down].hole = Memory.holeState.Possible
-            if (left != -1 && memory.rooms[left].hole==Memory.holeState.Unknown) memory.rooms[left].hole = Memory.holeState.Possible
-            if (right != -1 && memory.rooms[right].hole==Memory.holeState.Unknown) memory.rooms[right].hole = Memory.holeState.Possible
+            memory.rooms[newPlayerIndex].hole= Memory.holeState.Mark
+            if (up != -1 && !memory.rooms[up].beenHere && memory.rooms[up].hole==Memory.holeState.Unknown) memory.rooms[up].hole = Memory.holeState.Possible
+            if (down != -1 && !memory.rooms[down].beenHere && memory.rooms[down].hole==Memory.holeState.Unknown) memory.rooms[down].hole = Memory.holeState.Possible
+            if (left != -1  && !memory.rooms[left].beenHere && memory.rooms[left].hole==Memory.holeState.Unknown) memory.rooms[left].hole = Memory.holeState.Possible
+            if (right != -1 && !memory.rooms[right].beenHere && memory.rooms[right].hole==Memory.holeState.Unknown) memory.rooms[right].hole = Memory.holeState.Possible
         } else {
-            if (up != -1 && memory.rooms[up].hole!=Memory.holeState.True) memory.rooms[up].hole = Memory.holeState.False
-            if (down != -1 && memory.rooms[down].hole!=Memory.holeState.True) memory.rooms[down].hole = Memory.holeState.False
-            if (left != -1 && memory.rooms[left].hole!=Memory.holeState.True)  memory.rooms[left].hole = Memory.holeState.False
-            if (right != -1 && memory.rooms[right].hole!=Memory.holeState.True) memory.rooms[right].hole = Memory.holeState.False
+            if (up != -1 && !memory.rooms[up].beenHere && memory.rooms[up].hole!=Memory.holeState.True) memory.rooms[up].hole = Memory.holeState.False
+            if (down != -1 && !memory.rooms[down].beenHere && memory.rooms[down].hole!=Memory.holeState.True) memory.rooms[down].hole = Memory.holeState.False
+            if (left != -1 && !memory.rooms[left].beenHere && memory.rooms[left].hole!=Memory.holeState.True)  memory.rooms[left].hole = Memory.holeState.False
+            if (right != -1 && !memory.rooms[right].beenHere && memory.rooms[right].hole!=Memory.holeState.True) memory.rooms[right].hole = Memory.holeState.False
         }
-
+// todo если золото получено то нужно убирать метки possible
         if (currentRoom.shine) {
-            if (up != -1 && memory.rooms[up].gold==Memory.goldState.Unknown) memory.rooms[up].gold = Memory.goldState.Possible
-            if (down != -1 && memory.rooms[down].gold==Memory.goldState.Unknown) memory.rooms[down].gold = Memory.goldState.Possible
+            memory.rooms[newPlayerIndex].gold= Memory.goldState.Mark
+            if (up != -1 && !memory.rooms[up].beenHere && memory.rooms[up].gold==Memory.goldState.Unknown) memory.rooms[up].gold = Memory.goldState.Possible
+            if (down != -1 && !memory.rooms[down].beenHere && memory.rooms[down].gold==Memory.goldState.Unknown) memory.rooms[down].gold = Memory.goldState.Possible
             if (left != -1 && memory.rooms[left].gold==Memory.goldState.Unknown) memory.rooms[left].gold = Memory.goldState.Possible
-            if (right != -1 && memory.rooms[right].gold==Memory.goldState.Unknown) memory.rooms[right].gold = Memory.goldState.Possible
+            if (right != -1 && !memory.rooms[right].beenHere && memory.rooms[right].gold==Memory.goldState.Unknown) memory.rooms[right].gold = Memory.goldState.Possible
         } else {
-            if (up != -1 && memory.rooms[up].gold!=Memory.goldState.True) memory.rooms[up].gold = Memory.goldState.False
-            if (down != -1 && memory.rooms[down].gold!=Memory.goldState.True) memory.rooms[down].gold = Memory.goldState.False
-            if (left != -1 && memory.rooms[left].gold!=Memory.goldState.True) memory.rooms[left].gold = Memory.goldState.False
-            if (right != -1 && memory.rooms[right].gold!=Memory.goldState.True) memory.rooms[right].gold = Memory.goldState.False
+            if (up != -1 && !memory.rooms[up].beenHere && memory.rooms[up].gold!=Memory.goldState.True) memory.rooms[up].gold = Memory.goldState.False
+            if (down != -1 && !memory.rooms[down].beenHere && memory.rooms[down].gold!=Memory.goldState.True) memory.rooms[down].gold = Memory.goldState.False
+            if (left != -1 && !memory.rooms[left].beenHere && memory.rooms[left].gold!=Memory.goldState.True) memory.rooms[left].gold = Memory.goldState.False
+            if (right != -1 && !memory.rooms[right].beenHere && memory.rooms[right].gold!=Memory.goldState.True) memory.rooms[right].gold = Memory.goldState.False
         }
     }
 
@@ -89,7 +97,7 @@ class Player {
                 "kpop",
                 "$index ${room.risk} W-${room.wumpus}  H-${room.hole}  G-${room.gold}"
             )
-            if (!room.isLocked && !room.beenHere && room.risk < minRisk) {
+            if (!room.isLocked && !room.beenHere && room.wumpus!=Memory.wumpusState.True && room.hole!=Memory.holeState.True   && room.risk < minRisk ) {
                 i = index
                 minRisk = room.risk
             }
@@ -113,9 +121,10 @@ class Player {
             val sides = listOf(up, down, left, right)
             sides.forEach {side->
                 if (side != -1) {
-                    if (memory.rooms[side].wumpus==Memory.wumpusState.Possible) smellCount += 1
-                    if (memory.rooms[side].hole==Memory.holeState.Possible) windCount += 1
-                    if (memory.rooms[side].gold==Memory.goldState.Possible) shineCount += 1
+                    //todo smell и possible это разные вещи!!!!
+                    if (memory.rooms[side].wumpus==Memory.wumpusState.Mark) smellCount += 1
+                    if (memory.rooms[side].hole==Memory.holeState.Mark) windCount += 1
+                    if (memory.rooms[side].gold==Memory.goldState.Mark) shineCount += 1
                 }
             }
             if (smellCount >= 2) memory.rooms[index].wumpus = Memory.wumpusState.True
@@ -129,6 +138,7 @@ class Player {
         FallToHole("Игрок упал в яму"),
         GetGold("Игрок получил золото"),
         WumpusEat("Игрока съел Вампус"),
-        WumpusKill("Игрок убил Вампуса")
+        WumpusKill("Игрок убил Вампуса"),
+        NoTurns("Некуда идти")
     }
 }
