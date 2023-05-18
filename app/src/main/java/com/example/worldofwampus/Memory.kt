@@ -1,54 +1,27 @@
 package com.example.worldofwampus
 
 class Memory {
-    val rooms = arrayListOf<Memory.Room>()
+    val bloackBoard = arrayListOf<Memory.BloackBoard>()
 
     init {
         for (i in 0..15){
             when (i) {
                 12 -> {
-                    rooms.add(Room(beenHere = true, isLocked = false, wumpus = wumpusState.False, hole = holeState.False, gold = goldState.False))
+                    bloackBoard.add(BloackBoard(beenHere = true, isLocked = false))
                 }
                 13, 8 -> {
-                    rooms.add(Room(isLocked = false, wumpus = wumpusState.False, hole = holeState.False, gold = goldState.False))
+                    bloackBoard.add(BloackBoard(isLocked = false))
                 }
                 else -> {
-                    rooms.add(Room())
+                    bloackBoard.add(BloackBoard())
                 }
             }
         }
     }
 
-    inner class Room(
+    inner class BloackBoard(
         var isLocked: Boolean = true,
-        var beenHere: Boolean = false,
-        var wumpus: wumpusState = wumpusState.Unknown,
-        var hole: holeState = holeState.Unknown,
-        var gold: goldState = goldState.Unknown,
-    ){
-        val risk
-        get() = wumpus.risk+hole.risk+gold.risk
-    }
+        var beenHere: Boolean = false
+    )
 
-    enum class wumpusState(val risk: Int) {
-        True(1000),
-        Possible(100),
-        Mark(0),
-        Unknown(10),
-        False(0),
-    }
-    enum class holeState(val risk: Int) {
-        True(100),
-        Possible(10),
-        Mark(0),
-        Unknown(5),
-        False(0),
-    }
-    enum class goldState(val risk: Int) {
-        True(-60),
-        Possible(-2),
-        Mark(0),
-        Unknown(-1),
-        False(0),
-    }
 }
