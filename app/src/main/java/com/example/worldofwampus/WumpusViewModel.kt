@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 class WumpusViewModel(application: Application) : AndroidViewModel(application) {
 
-    private var memory = Memory()
+    var memory = Memory()
 
 
     val playerIndexMLD = MutableLiveData<Int>()
@@ -57,16 +57,16 @@ class WumpusViewModel(application: Application) : AndroidViewModel(application) 
             }
             val bestWay = DoubleArray(16)
             val wumpusPosition = imagineWorlds[0].indexOfFirst { it.wumpus==true }
-            if (imagineWorlds.all { it[wumpusPosition].wumpus==true }
-                && !memory.blackBoard[wumpusPosition].isLocked && !memory.blackBoard[wumpusPosition].beenHere){
+            if (imagineWorlds.all { it[wumpusPosition].wumpus }
+                && memory.blackBoard[wumpusPosition]?.isLocked==false && memory.blackBoard[wumpusPosition]?.beenHere==false){
                 bestWayFoundedMLD.postValue(Pair(wumpusPosition,Action.KillWumpus))
             } else{
                 imagineWorlds.forEach {
                     it.forEachIndexed { index, room ->
-                        if (!memory.blackBoard[index].isLocked && !memory.blackBoard[index].beenHere){
-                            if (room.hole==false && room.wumpus==false) {
+                        if (memory.blackBoard[index]?.isLocked==false && memory.blackBoard[index]?.beenHere==false){
+                            if (!room.hole && !room.wumpus) {
                                 bestWay[index] += 1.0
-                                if (room.gold==true){
+                                if (room.gold){
                                     bestWay[index] += 0.01
                                 }
                             }
@@ -83,18 +83,18 @@ class WumpusViewModel(application: Application) : AndroidViewModel(application) 
     fun goTo(map: ArrayList<Room>, newPlayerIndex: Int) {
         val currentRoom = map[newPlayerIndex]
 
-        if (currentRoom.wumpus==true) {
+        if (currentRoom.wumpus) {
             gameOverMLD.value=Player.GameEnd.WumpusEat
-        } else if (currentRoom.hole==true) {
+        } else if (currentRoom.hole) {
             gameOverMLD.value=Player.GameEnd.FallToHole
-        } else if (currentRoom.gold==true) {
+        } else if (currentRoom.gold) {
             gameOverMLD.value=Player.GameEnd.GetGold
         }
 
         playerIndexMLD.value=newPlayerIndex
         memory.memoryMap[newPlayerIndex] = currentRoom
 
-        memory.blackBoard[newPlayerIndex].beenHere = true
+        memory.blackBoard[newPlayerIndex]?.beenHere = true
         val up = if (newPlayerIndex - 4 >= 0) newPlayerIndex - 4 else -1
         val down = if (newPlayerIndex + 4 < 16) newPlayerIndex + 4 else -1
         val left = if (newPlayerIndex % 4 != 0) newPlayerIndex - 1 else -1
@@ -102,10 +102,10 @@ class WumpusViewModel(application: Application) : AndroidViewModel(application) 
 
 
 //        unlock
-        if (up != -1) memory.blackBoard[up].isLocked = false
-        if (down != -1) memory.blackBoard[down].isLocked = false
-        if (left != -1) memory.blackBoard[left].isLocked = false
-        if (right != -1) memory.blackBoard[right].isLocked = false
+        if (up != -1) memory.blackBoard[up]?.isLocked = false
+        if (down != -1) memory.blackBoard[down]?.isLocked = false
+        if (left != -1) memory.blackBoard[left]?.isLocked = false
+        if (right != -1) memory.blackBoard[right]?.isLocked = false
     }
 
     fun killWumpus(map: ArrayList<Room>, newPlayerIndex: Int) {

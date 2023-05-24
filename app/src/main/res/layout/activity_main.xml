@@ -33,5 +33,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rvWorld" />
+    <CheckBox
+        android:id="@+id/cbBoardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Посмотреть поле"
+        android:checked="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cbTextVIew"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bTurn" />
+
+    <CheckBox
+        android:id="@+id/cbTextVIew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Текстовая Версия"
+        android:checked="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cbBoardView"
+        app:layout_constraintTop_toBottomOf="@+id/bTurn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

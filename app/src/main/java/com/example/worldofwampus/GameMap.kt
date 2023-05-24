@@ -2,12 +2,12 @@ package com.example.worldofwampus
 
 
 data class Room(
-    var wumpus: Boolean?,
-    var smell: Boolean?,
-    val hole: Boolean?,
-    var wind: Boolean?,
-    var gold: Boolean?,
-    var shine: Boolean?
+    var wumpus: Boolean,
+    var smell: Boolean,
+    val hole: Boolean,
+    var wind: Boolean,
+    var gold: Boolean,
+    var shine: Boolean
 ) {
     companion object {
         fun imageRoom(): ArrayList<Room> {

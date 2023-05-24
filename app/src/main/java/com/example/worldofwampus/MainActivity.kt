@@ -23,27 +23,10 @@ class MainActivity : AppCompatActivity() {
         binding.rvWorld.layoutManager =
             GridLayoutManager(applicationContext, 4, GridLayoutManager.VERTICAL, false)
         adapter.list = imageRoom()
+        adapter.blackBoard = viewModel.memory.blackBoard
         adapter.notifyDataSetChanged()
 
-        binding.bRefresh.setOnClickListener {
-            adapter.list = imageRoom()
-            adapter.player=12
-            viewModel.isGameEnded=false
-            viewModel.refresh()
-            adapter.notifyDataSetChanged()
-        }
-
-        binding.bTurn.setOnClickListener {
-            if (viewModel.isBlockingTurn) {
-                return@setOnClickListener
-            }
-            if (viewModel.isGameEnded) {
-                Toast.makeText(this,"Начните новую игру",Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            viewModel.makeTurn()
-        }
-        Log.i("kpop","start")
+        setListenners()
 
 viewModel.gameOverMLD.observe(this,::gameOver)
 
@@ -64,15 +47,38 @@ viewModel.gameOverMLD.observe(this,::gameOver)
                 viewModel.goTo(adapter.list, it.first)
             }
         }
+    }
 
-//        CoroutineScope(Dispatchers.Default).launch {
-//            while (true){
-//                if ((imageRoom()) == adapter.list)
-//                    Log.i("kpop","equels")
-//
-//
-//        }
-//        }
+    private fun setListenners() {
+        binding.bRefresh.setOnClickListener {
+            adapter.list = imageRoom()
+            adapter.player=12
+            viewModel.isGameEnded=false
+            viewModel.refresh()
+            adapter.blackBoard = viewModel.memory.blackBoard
+            adapter.notifyDataSetChanged()
+        }
+
+        binding.bTurn.setOnClickListener {
+            if (viewModel.isBlockingTurn) {
+                return@setOnClickListener
+            }
+            if (viewModel.isGameEnded) {
+                Toast.makeText(this,"Начните новую игру",Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            viewModel.makeTurn()
+        }
+
+        binding.cbBoardView.setOnCheckedChangeListener { buttonView, isChecked ->
+            adapter.boardView=isChecked
+            adapter.notifyDataSetChanged()
+        }
+
+        binding.cbTextVIew.setOnCheckedChangeListener { buttonView, isChecked ->
+            adapter.textView=isChecked
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun gameOver(gameEnd: Player.GameEnd) {
