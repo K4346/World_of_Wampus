@@ -1,19 +1,20 @@
 package com.example.worldofwampus
 
 class Memory {
-    val bloackBoard = arrayListOf<Memory.BloackBoard>()
+    val blackBoard = arrayListOf<Memory.BloackBoard>()
+    var memoryMap: Array<Room?> = arrayOfNulls<Room?>(16)
 
     init {
         for (i in 0..15){
             when (i) {
                 12 -> {
-                    bloackBoard.add(BloackBoard(beenHere = true, isLocked = false))
+                    blackBoard.add(BloackBoard(beenHere = true, isLocked = false))
                 }
                 13, 8 -> {
-                    bloackBoard.add(BloackBoard(isLocked = false))
+                    blackBoard.add(BloackBoard(isLocked = false))
                 }
                 else -> {
-                    bloackBoard.add(BloackBoard())
+                    blackBoard.add(BloackBoard())
                 }
             }
         }

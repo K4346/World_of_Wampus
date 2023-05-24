@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 class WumpusViewModel(application: Application) : AndroidViewModel(application) {
 
     private var memory = Memory()
-    var memoryMap: Array<Room?> = arrayOfNulls<Room?>(16)
+
 
     val playerIndexMLD = MutableLiveData<Int>()
     val bestWayFoundedMLD = MutableLiveData<Pair<Int,Action>>()
@@ -22,12 +22,12 @@ class WumpusViewModel(application: Application) : AndroidViewModel(application) 
     var isGameEnded=false
 
     init {
-        memoryMap[12] = Room(false, false, false, false, false, false)
+        memory.memoryMap[12] = Room(false, false, false, false, false, false)
     }
 
     fun refresh(){
         memory = Memory()
-        memoryMap = arrayOfNulls<Room?>(16)
+        memory.memoryMap = arrayOfNulls<Room?>(16)
 
     }
 
@@ -45,12 +45,12 @@ class WumpusViewModel(application: Application) : AndroidViewModel(application) 
         while (imagineWorlds.size != 15) {
                 val worldCandidate = Room.imageRoom()
                 var k = 0
-                memoryMap.forEachIndexed { index, room ->
+            memory.memoryMap.forEachIndexed { index, room ->
                     if (room != null && room == worldCandidate[index]) {
                         k += 1
                     }
                 }
-                if (k == memoryMap.count { it != null }) {
+                if (k == memory.memoryMap.count { it != null }) {
                     imagineWorlds.add(worldCandidate)
                     Log.i("kpop",imagineWorlds.size.toString())
                 }
@@ -58,12 +58,12 @@ class WumpusViewModel(application: Application) : AndroidViewModel(application) 
             val bestWay = DoubleArray(16)
             val wumpusPosition = imagineWorlds[0].indexOfFirst { it.wumpus==true }
             if (imagineWorlds.all { it[wumpusPosition].wumpus==true }
-                && !memory.bloackBoard[wumpusPosition].isLocked && !memory.bloackBoard[wumpusPosition].beenHere){
+                && !memory.blackBoard[wumpusPosition].isLocked && !memory.blackBoard[wumpusPosition].beenHere){
                 bestWayFoundedMLD.postValue(Pair(wumpusPosition,Action.KillWumpus))
             } else{
                 imagineWorlds.forEach {
                     it.forEachIndexed { index, room ->
-                        if (!memory.bloackBoard[index].isLocked && !memory.bloackBoard[index].beenHere){
+                        if (!memory.blackBoard[index].isLocked && !memory.blackBoard[index].beenHere){
                             if (room.hole==false && room.wumpus==false) {
                                 bestWay[index] += 1.0
                                 if (room.gold==true){
@@ -92,9 +92,9 @@ class WumpusViewModel(application: Application) : AndroidViewModel(application) 
         }
 
         playerIndexMLD.value=newPlayerIndex
-        memoryMap[newPlayerIndex] = currentRoom
+        memory.memoryMap[newPlayerIndex] = currentRoom
 
-        memory.bloackBoard[newPlayerIndex].beenHere = true
+        memory.blackBoard[newPlayerIndex].beenHere = true
         val up = if (newPlayerIndex - 4 >= 0) newPlayerIndex - 4 else -1
         val down = if (newPlayerIndex + 4 < 16) newPlayerIndex + 4 else -1
         val left = if (newPlayerIndex % 4 != 0) newPlayerIndex - 1 else -1
@@ -102,10 +102,10 @@ class WumpusViewModel(application: Application) : AndroidViewModel(application) 
 
 
 //        unlock
-        if (up != -1) memory.bloackBoard[up].isLocked = false
-        if (down != -1) memory.bloackBoard[down].isLocked = false
-        if (left != -1) memory.bloackBoard[left].isLocked = false
-        if (right != -1) memory.bloackBoard[right].isLocked = false
+        if (up != -1) memory.blackBoard[up].isLocked = false
+        if (down != -1) memory.blackBoard[down].isLocked = false
+        if (left != -1) memory.blackBoard[left].isLocked = false
+        if (right != -1) memory.blackBoard[right].isLocked = false
     }
 
     fun killWumpus(map: ArrayList<Room>, newPlayerIndex: Int) {
@@ -115,7 +115,7 @@ class WumpusViewModel(application: Application) : AndroidViewModel(application) 
             gameOverMLD.value=Player.GameEnd.WumpusKill
             map[newPlayerIndex].wumpus=false
             map.forEach { it.smell=false }
-            memoryMap.forEach {
+            memory.memoryMap.forEach {
                 it?.wumpus=false
                 it?.smell= false
             }
